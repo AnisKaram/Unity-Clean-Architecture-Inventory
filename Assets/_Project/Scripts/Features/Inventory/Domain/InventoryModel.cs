@@ -7,7 +7,7 @@ namespace Project.Features.Inventory.Domain
     /// <summary>
     /// Manages the list of slots (InventorySlot), the rules if we can add/remove/swap/full.
     /// </summary>
-    public class InventoryModel : MonoBehaviour
+    public class InventoryModel
     {
         public List<InventorySlot> Slots { get; private set; }
         public int Capacity { get; private set; }
@@ -195,7 +195,7 @@ namespace Project.Features.Inventory.Domain
         }
 
         // Get the slot from the Slots list or null if not found
-        private InventorySlot GetSlot(int index)
+        public InventorySlot GetSlot(int index)
         {
             if (index >= 0 && index < Slots.Count)
             {
