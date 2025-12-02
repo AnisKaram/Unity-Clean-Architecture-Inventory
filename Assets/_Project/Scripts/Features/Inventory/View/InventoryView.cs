@@ -24,11 +24,11 @@ namespace Project.Features.Inventory.View
             }
             
             m_InventorySlots = new List<InventorySlotView>(capacity);
-            
+
             for (int i = 0; i < capacity; i++)
             {
                 InventorySlotView inventorySlotView = Instantiate(m_InventorySlotPrefab, m_Container);
-                inventorySlotView.Initialize(i, OnSlotClicked);
+                inventorySlotView.Initialize(i, (index) => OnSlotClicked?.Invoke(index));
                 m_InventorySlots.Add(inventorySlotView);
             }
         }
