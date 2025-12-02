@@ -27,7 +27,7 @@ namespace Project.Features.Inventory.View
 
         public void SetData(Sprite icon, int quantity)
         {
-            // Hide the icon and quantity text if the icon is null
+            // Empty Slot
             if (icon == null)
             {
                 m_Icon.gameObject.SetActive(false);
@@ -35,8 +35,17 @@ namespace Project.Features.Inventory.View
                 return;
             }
             
+            // Valid item
+            m_Icon.gameObject.SetActive(true);
             m_Icon.sprite = icon;
-            m_QuantityText.text = quantity.ToString();
+            
+            // Show the text if quantity is 2+ 
+            bool isStack = quantity > 1;
+            m_QuantityText.gameObject.SetActive(isStack);
+            if (isStack)
+            {
+                m_QuantityText.text = quantity.ToString();
+            }
         }
     }
 }
