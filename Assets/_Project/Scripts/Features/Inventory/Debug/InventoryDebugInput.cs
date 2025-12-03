@@ -1,5 +1,6 @@
 using System;
 using Project.Features.Inventory.Domain;
+using Project.Features.Inventory.Services;
 using UnityEngine;
 using VContainer;
 
@@ -12,11 +13,13 @@ namespace Project.Features.Inventory.DebugScripts
         [SerializeField] private InventoryItemSO m_Potion;
         
         private InventoryModel m_InventoryModel;
+        private JsonInventoryService m_SaveService;
 
         [Inject]
-        public void Construct(InventoryModel inventoryModel)
+        public void Construct(InventoryModel inventoryModel, JsonInventoryService saveService)
         {
             m_InventoryModel = inventoryModel;
+            m_SaveService = saveService;
         }
 
         private void Update()
@@ -47,6 +50,12 @@ namespace Project.Features.Inventory.DebugScripts
                 // Remove 5 items from Slot 0.
                 Debug.Log("Removing 5 items from slot 0");
                 m_InventoryModel.RemoveItem(0, 5);
+            }
+
+            if (Input.GetKeyDown(KeyCode.K))
+            {
+                m_SaveService.Save(m_InventoryModel);
+                Debug.Log("Saved Inventory Model");
             }
         }
     }
