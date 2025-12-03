@@ -19,13 +19,13 @@ namespace Project.Features.Inventory.Domain
         {
             Capacity = capacity;
             Slots = new List<InventorySlot>();
-            
+
             for (int i = 0; i < Capacity; i++)
             {
                 Slots.Add(new InventorySlot());
             }
         }
-        
+
         // Try adding a new item to the Slots list or add it to the existing and the leftover (if-any)
         public bool TryAddItem(InventoryItemSO itemToAdd, int quantity)
         {
@@ -39,11 +39,11 @@ namespace Project.Features.Inventory.Domain
                     if (space > 0)
                     {
                         int quantityToAdd = Mathf.Min(space, quantity); // Add as much as the slot can take
-                        
+
                         slot.AddQuantity(quantityToAdd);
-                        
+
                         quantity -= quantityToAdd;
-                        
+
                         OnSlotUpdated?.Invoke(Slots.IndexOf(slot));
 
                         if (quantity <= 0) // We placed everything 
@@ -53,7 +53,7 @@ namespace Project.Features.Inventory.Domain
                     }
                 }
             }
-            
+
             // Second, we need to try to find an empty slot and add it to it.
             foreach (InventorySlot slot in Slots)
             {
@@ -65,11 +65,11 @@ namespace Project.Features.Inventory.Domain
                 if (slot.IsEmpty)
                 {
                     slot.SetItem(itemToAdd, quantity); // Put the rest here
-                    
+
                     quantity = 0;
-                    
+
                     OnSlotUpdated?.Invoke(Slots.IndexOf(slot));
-                    
+
                     return true;
                 }
             }
@@ -87,7 +87,7 @@ namespace Project.Features.Inventory.Domain
             {
                 return;
             }
-            
+
             int amountLeft = slot.Quantity - amount;
 
             if (amountLeft <= 0)
@@ -98,7 +98,7 @@ namespace Project.Features.Inventory.Domain
             {
                 slot.SetItem(slot.ItemData, amountLeft);
             }
-            
+
             OnSlotUpdated?.Invoke(index);
         }
 
@@ -112,11 +112,11 @@ namespace Project.Features.Inventory.Domain
             {
                 return;
             }
-            
+
             // Store A in temporary fields
             var tempItem = slotA.ItemData;
             var tempQuantity = slotA.Quantity;
-            
+
             // Swap B into A
             if (slotB.IsEmpty)
             {
@@ -126,10 +126,10 @@ namespace Project.Features.Inventory.Domain
             {
                 slotA.SetItem(slotB.ItemData, slotB.Quantity);
             }
-            
+
             // Move temp A into B
             slotB.SetItem(tempItem, tempQuantity);
-            
+
             // Notify both slots that has been updated
             OnSlotUpdated?.Invoke(indexA);
             OnSlotUpdated?.Invoke(indexB);
@@ -147,6 +147,7 @@ namespace Project.Features.Inventory.Domain
                     total += slot.Quantity;
                 }
             }
+
             return total;
         }
 
@@ -157,7 +158,7 @@ namespace Project.Features.Inventory.Domain
             {
                 return false;
             }
-            
+
             // Remove from multiple slots if available
             for (int i = 0; i < Slots.Count; i++)
             {
@@ -170,9 +171,9 @@ namespace Project.Features.Inventory.Domain
                 if (!slot.IsEmpty && slot.ItemData.ID == itemID)
                 {
                     int amountToRemove = Mathf.Min(slot.Quantity, amount);
-                    
+
                     RemoveItem(i, amountToRemove);
-                    
+
                     amount -= amountToRemove;
                 }
             }
@@ -191,6 +192,7 @@ namespace Project.Features.Inventory.Domain
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -201,7 +203,16 @@ namespace Project.Features.Inventory.Domain
             {
                 return Slots[index];
             }
+
             return null;
+        }
+
+        public void ClearAllSlots()
+        {
+            foreach (InventorySlot slot in Slots)
+            {
+                slot.Clear();
+            }
         }
     }
 }
