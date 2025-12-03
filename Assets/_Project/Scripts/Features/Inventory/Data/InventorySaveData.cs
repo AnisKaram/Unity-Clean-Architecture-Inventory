@@ -7,13 +7,13 @@ namespace Project.Features.Inventory.Data
     public class InventorySaveData
     {
         public List<SlotSaveData> inventoryItems = new List<SlotSaveData>();
-        
-        [Serializable]
-        public struct SlotSaveData
-        {
-            public string itemID;
-            public int quantity;
-            public int slotIndex;
-        }
+    }
+    
+    [Serializable]
+    public struct SlotSaveData
+    {
+        public string itemID;
+        public int quantity;
+        public int slotIndex;
     }
 }
