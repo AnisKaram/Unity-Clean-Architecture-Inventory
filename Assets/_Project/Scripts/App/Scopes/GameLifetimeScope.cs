@@ -12,6 +12,9 @@ namespace Project.App.Scopes
         [Header("Settings")]
         [SerializeField] private int m_InventoryCapacity = 10;
         
+        [Header("Data")]
+        [SerializeField] private ItemRegistry m_ItemRegistry;
+        
         [Header("Scene Components")]
         [SerializeField] private InventoryView m_InventoryView;
         
@@ -27,6 +30,9 @@ namespace Project.App.Scopes
             
             // This is how we register a Monobehaviour present in our scene.
             builder.RegisterComponent(m_InventoryView);
+
+            // Register a scriptable object
+            builder.RegisterInstance(m_ItemRegistry);
         }
     }
 }

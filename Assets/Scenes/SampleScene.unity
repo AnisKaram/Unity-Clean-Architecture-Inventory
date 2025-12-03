@@ -435,6 +435,7 @@ MonoBehaviour:
   autoInjectGameObjects:
   - {fileID: 1771974808}
   m_InventoryCapacity: 10
+  m_ItemRegistry: {fileID: 11400000, guid: 2e5031a36429245f0bd06ee43f4e8e3d, type: 2}
   m_InventoryView: {fileID: 1088339890}
 --- !u!4 &940448497
 Transform:
