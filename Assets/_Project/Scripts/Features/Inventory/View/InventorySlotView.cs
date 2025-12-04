@@ -2,26 +2,40 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using UnityEngine.EventSystems;
 
 namespace Project.Features.Inventory.View
 {
     /// <summary>
     /// This creates a wrapper for the UI inventory button prefab.
     /// </summary>
-    public class InventorySlotView : MonoBehaviour
+    public class InventorySlotView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
     {
         [SerializeField] private Image m_Icon;
         [SerializeField] private Button m_SlotButton;
         [SerializeField] private TextMeshProUGUI m_QuantityText;
-
+        [SerializeField] private int m_Index;
+        
+        public event Action<int, Sprite> OnBeginDragSlot;
+        public event Action<int> OnEndDragSlot;
+        public event Action<int> OnDropSlot;
+        public event Action OnDragSlot;
+        
+        
         private void OnDestroy()
         {
             m_SlotButton.onClick.RemoveAllListeners();
+
+            OnBeginDragSlot = null;
+            OnEndDragSlot = null;
+            OnDropSlot = null;
+            OnDragSlot = null;
         }
         
         public void Initialize(int index, Action<int> onClick)
         {
             int clickIndex = index;
+            m_Index = clickIndex;
             m_SlotButton.onClick.AddListener(() => onClick(clickIndex));
         }
 
@@ -47,5 +61,32 @@ namespace Project.Features.Inventory.View
                 m_QuantityText.text = quantity.ToString();
             }
         }
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            // Only start the drag if the icon is active
+            if (!m_Icon.gameObject.activeSelf)
+            {
+                return;
+            }
+            OnBeginDragSlot?.Invoke(m_Index, GetIcon());
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
+            OnDragSlot?.Invoke();
+        }
+
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            OnEndDragSlot?.Invoke(m_Index);
+        }
+
+        public void OnDrop(PointerEventData eventData)
+        {
+            OnDropSlot?.Invoke(m_Index);
+        }
+
+        private Sprite GetIcon() => m_Icon.sprite;
     }
 }
