@@ -30,7 +30,7 @@ namespace Project.Features.Character
         {
             m_IdleState = new IdleState(m_PlayerInputReader);
             m_MoveState = new MoveState(m_PlayerSettings, m_PlayerInputReader, transform);
-            m_JumpState = new JumpState(m_PlayerSettings, m_Rigidbody, transform);
+            m_JumpState = new JumpState(m_PlayerSettings, m_PlayerInputReader, m_Rigidbody, transform);
 
             m_IdleState.OnMove += IdleState_OnMove;
             m_IdleState.OnJump += IdleState_OnJump;

@@ -40,9 +40,10 @@ namespace Project.Features.Character.Domain
                 return;
             }
             
+            // Move
             Vector2 movementVector2 = m_PlayerInputReader.GetPlayerInputData().movement;
             Vector3 movementVector3 = new Vector3(movementVector2.x, 0, movementVector2.y);
-            m_ObjectTransform.position += movementVector3 * m_PlayerSettings.movementSpeed * Time.deltaTime;
+            m_ObjectTransform.position += movementVector3 * (m_PlayerSettings.movementSpeed * Time.deltaTime);
 
             // Rotate when moving only
             if (movementVector3 != Vector3.zero)

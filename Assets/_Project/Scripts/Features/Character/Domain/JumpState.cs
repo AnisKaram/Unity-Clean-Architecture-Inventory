@@ -1,5 +1,6 @@
 using System;
 using Project.Features.Character.Data;
+using Project.Features.Character.View;
 using UnityEngine;
 
 namespace Project.Features.Character.Domain
@@ -8,13 +9,15 @@ namespace Project.Features.Character.Domain
     {
         private readonly Rigidbody m_Rigidbody;
         private readonly PlayerSettingsSO m_PlayerSettings;
+        private readonly PlayerInputReader m_PlayerInputReader;
         private readonly Transform m_ObjectTransform;
 
         public event Action OnLand;
         
-        public JumpState(PlayerSettingsSO playerSettings, Rigidbody rigidbody, Transform objectTransform)
+        public JumpState(PlayerSettingsSO playerSettings, PlayerInputReader playerInputReader, Rigidbody rigidbody, Transform objectTransform)
         {
             m_PlayerSettings = playerSettings;
+            m_PlayerInputReader = playerInputReader;
             m_Rigidbody = rigidbody;
             m_ObjectTransform = objectTransform;
         }
@@ -33,7 +36,20 @@ namespace Project.Features.Character.Domain
 
         public void Update()
         {
-            
+            // Move
+            Vector2 movementVector2 = m_PlayerInputReader.GetPlayerInputData().movement;
+            Vector3 movementVector3 = new Vector3(movementVector2.x, 0, movementVector2.y);
+            m_ObjectTransform.position += movementVector3 * (m_PlayerSettings.movementSpeed * Time.deltaTime);
+
+            // Rotate when moving only
+            if (movementVector3 != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(movementVector3);
+                m_ObjectTransform.rotation = Quaternion.Slerp(
+                    m_ObjectTransform.rotation,
+                    targetRotation,
+                    m_PlayerSettings.rotationSpeed * Time.deltaTime);
+            }
         }
 
         public void FixedUpdate()
