@@ -25,7 +25,6 @@ namespace Project.Features.Character.Domain
             float moveOffset = 0.01f;
             if (m_PlayerInputReader.GetPlayerInputData().movement.sqrMagnitude > moveOffset)
             {
-                Debug.Log("Should switch to Move state");
                 OnMove?.Invoke();
             }
         }
