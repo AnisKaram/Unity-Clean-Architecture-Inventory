@@ -772,6 +772,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a02956179c5c49939aba13ba5581d55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Features.AI::Project.Features.AI.Components.NpcContext
+  m_Apple: {fileID: 11400000, guid: a8077f8c372b74b45953ed5230d5f1c0, type: 2}
 --- !u!114 &1157885377
 MonoBehaviour:
   m_ObjectHideFlags: 0
