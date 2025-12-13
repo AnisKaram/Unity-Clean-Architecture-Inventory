@@ -1,3 +1,4 @@
+using Project.Features.Character;
 using Project.Features.Character.Data;
 using Project.Features.Character.View;
 using UnityEngine;
@@ -25,6 +26,7 @@ namespace Project.App.Scopes
         [Header("Scene Components")]
         [SerializeField] private InventoryView m_InventoryView;
         [SerializeField] private PlayerInputReader m_PlayerInputReader;
+        [SerializeField] private PlayerController m_PlayerController;
         
         protected override void Configure(IContainerBuilder builder)
         {
@@ -47,6 +49,7 @@ namespace Project.App.Scopes
             // This is how we register a Monobehaviour present in our scene.
             builder.RegisterComponent(m_InventoryView);
             builder.RegisterComponent(m_PlayerInputReader);
+            builder.RegisterComponent(m_PlayerController);
         }
     }
 }
