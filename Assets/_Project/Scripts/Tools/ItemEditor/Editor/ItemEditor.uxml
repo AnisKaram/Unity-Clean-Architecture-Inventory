@@ -7,7 +7,7 @@
             <ui:ScrollView name="ItemDetailsContainer" style="flex-grow: 1;">
                 <ui:TextField label="ID" placeholder-text="Item ID" name="ItemID_Field"/>
                 <ui:TextField label="Name" placeholder-text="Item Name" name="ItemName_Field"/>
-                <uie:ObjectField label="Object Field" name="ItemIcon_Field" type="UnityEngine.Sprite, UnityEngine.CoreModule" style="height: auto;"/>
+                <uie:ObjectField label="Icon" name="ItemIcon_Field" type="UnityEngine.Sprite, UnityEngine.CoreModule" style="height: auto;"/>
                 <ui:IntegerField label="Max Stack" value="42" name="ItemStack_Field"/>
             </ui:ScrollView>
         </ui:VisualElement>
