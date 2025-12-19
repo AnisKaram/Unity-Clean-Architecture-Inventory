@@ -7,6 +7,12 @@ using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using ObjectField = UnityEditor.UIElements.ObjectField;
 
+// [Done] Todo: add the logic to show and populate all items.
+// [Done] Todo: add the logic to change the asset fields (input fields).
+// [Done] Todo: add the logic to create an item.
+// Todo: add the logic to rename the asset file name.
+// Todo: add the logic to delete an asset file.
+
 namespace Project.Tools.ItemEditor.Editor
 {
     public class ItemEditorWindow : EditorWindow
