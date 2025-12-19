@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
 using Project.Features.Inventory.Domain;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
+using ObjectField = UnityEditor.UIElements.ObjectField;
 
 namespace Project.Tools.ItemEditor.Editor
 {
@@ -12,6 +14,13 @@ namespace Project.Tools.ItemEditor.Editor
         private ListView m_ItemListView;
         private VisualElement m_RightPane;
         private List<InventoryItemSO> m_InventoryItems;
+
+        private TextField m_ID;
+        private TextField m_Name;
+        private ObjectField m_Icon;
+        private IntegerField m_MaxStack;
+
+        private InventoryItemSO m_SelectedItem;
         
         // Have access to it by accessing it from the Menu.
         [MenuItem("Tools/Item Database")]
@@ -32,7 +41,7 @@ namespace Project.Tools.ItemEditor.Editor
                 Debug.LogError($"Could not load ItemEditor uxml at {uxmlPath}");
                 return;
             }
-
+            
             // Instantiate it inside the window. 
             visualTree.CloneTree(rootVisualElement);
             
@@ -40,9 +49,64 @@ namespace Project.Tools.ItemEditor.Editor
             m_ItemListView = rootVisualElement.Query<ListView>("ItemListView");
             m_RightPane = rootVisualElement.Query<VisualElement>("RightPane");
             
-            LoadInventoryItems();
+            m_ID = rootVisualElement.Query<TextField>("ItemID_Field");
+            m_Name = rootVisualElement.Query<TextField>("ItemName_Field");
+            m_Icon = rootVisualElement.Query<ObjectField>("ItemIcon_Field");
+            m_MaxStack = rootVisualElement.Query<IntegerField>("ItemStack_Field");
             
+            // Load Data
+            LoadInventoryItems();
             SetupListView();
+            
+            m_ItemListView.selectionChanged += OnSelectionChanged;
+
+            m_ID.RegisterValueChangedCallback(change =>
+            {
+                if (m_SelectedItem == null)
+                {
+                    return;
+                }
+                
+                m_SelectedItem.SetID(change.newValue); // Change the value.
+                EditorUtility.SetDirty(m_SelectedItem); // Save the value changed in the scriptable object.
+                m_ItemListView.RefreshItem(m_ItemListView.selectedIndex); // Refresh the list view.
+            });
+
+            m_Name.RegisterValueChangedCallback(change =>
+            {
+                if (m_SelectedItem == null)
+                {
+                    return;
+                }
+                
+                m_SelectedItem.SetName(change.newValue); // Change the value.
+                EditorUtility.SetDirty(m_SelectedItem); // Save the value changed in the scriptable object.
+                m_ItemListView.RefreshItem(m_ItemListView.selectedIndex); // Refresh the list view.
+            });
+
+            m_Icon.RegisterValueChangedCallback(change =>
+            {
+                if (m_SelectedItem == null)
+                {
+                    return;
+                }
+                
+                m_SelectedItem.SetIcon((Sprite)change.newValue); // Cast and change the value.
+                EditorUtility.SetDirty(m_SelectedItem); // Save the value changed in the scriptable object.
+                m_ItemListView.RefreshItem(m_ItemListView.selectedIndex); // Refresh the list view.
+            });
+
+            m_MaxStack.RegisterValueChangedCallback(change =>
+            {
+                if (m_SelectedItem == null)
+                {
+                    return;
+                }
+                
+                m_SelectedItem.SetMaxStack(change.newValue); // Change the value.
+                EditorUtility.SetDirty(m_SelectedItem); // Save the value changed in the scriptable object.
+                m_ItemListView.RefreshItem(m_ItemListView.selectedIndex); // Refresh the list view.
+            });
         }
 
         private void LoadInventoryItems()
@@ -84,11 +148,27 @@ namespace Project.Tools.ItemEditor.Editor
             };
 
             // Auto-Select the first option.
-            if (m_InventoryItems.Count > 0)
-            {
-                m_ItemListView.SetSelection(0);
-            }
+            // if (m_InventoryItems.Count > 0)
+            // {
+            //     m_ItemListView.SetSelection(0);
+            // }
         }
 
+        private void OnSelectionChanged(IEnumerable<object> selectedItems)
+        {
+            m_SelectedItem = selectedItems.First() as InventoryItemSO;
+
+            if (m_SelectedItem == null)
+            {
+                Debug.Log("No item selected!");
+                return;
+            }
+            
+            // Filling the fields.
+            m_ID.value = m_SelectedItem.ID;
+            m_Name.value = m_SelectedItem.Name;
+            m_Icon.value = m_SelectedItem.Icon;
+            m_MaxStack.value = m_SelectedItem.MaxStack;
+        }
     }
 }
