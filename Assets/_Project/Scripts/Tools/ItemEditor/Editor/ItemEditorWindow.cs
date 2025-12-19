@@ -67,11 +67,11 @@ namespace Project.Tools.ItemEditor.Editor
             m_CreateItem = rootVisualElement.Query<ToolbarButton>("CreateItem_Button");
             m_DeleteItem = rootVisualElement.Query<ToolbarButton>("DeleteItem_Button");
             
+            m_ItemListView.selectionChanged += OnSelectionChanged;
+            
             // Load Data
             LoadInventoryItems();
             SetupListView();
-            
-            m_ItemListView.selectionChanged += OnSelectionChanged;
             
             m_CreateItem.clicked += OnCreateItemButtonClicked;
             m_DeleteItem.clicked += OnDeleteItemButtonClicked;
@@ -217,10 +217,11 @@ namespace Project.Tools.ItemEditor.Editor
             };
 
             // Auto-Select the first option.
-            // if (m_InventoryItems.Count > 0)
-            // {
-            //     m_ItemListView.SetSelection(0);
-            // }
+            if (m_InventoryItems.Count > 0)
+            {
+                m_ItemListView.SetSelection(0);
+                m_SelectedItem = m_InventoryItems[0];
+            }
         }
 
         private void OnSelectionChanged(IEnumerable<object> selectedItems)
