@@ -5,8 +5,10 @@
         </ui:VisualElement>
         <ui:VisualElement name="RightPane" style="flex-grow: 1;">
             <ui:ScrollView name="ItemDetailsContainer" style="flex-grow: 1;">
-                <ui:Label text="Label" name="ItemDetails" style="opacity: 1;"/>
-                <ui:Image data-source=""/>
+                <ui:TextField label="ID" placeholder-text="Item ID" name="ItemID_Field"/>
+                <ui:TextField label="Name" placeholder-text="Item Name" name="ItemName_Field"/>
+                <uie:ObjectField label="Icon" name="ItemIcon_Field" type="UnityEngine.Sprite, UnityEngine.CoreModule" style="height: 100px;"/>
+                <ui:IntegerField label="Max Stack" value="42" name="ItemStack_Field"/>
             </ui:ScrollView>
         </ui:VisualElement>
     </ui:VisualElement>

@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using Project.Features.Inventory.Domain;
 using UnityEngine;
 using UnityEditor;
-using UnityEngine.Audio;
 using UnityEngine.UIElements;
 
 namespace Project.Tools.ItemEditor.Editor
@@ -26,6 +23,7 @@ namespace Project.Tools.ItemEditor.Editor
 
         private void CreateGUI()
         {
+            // Locate and load the design editor file which is the ItemEditor UXML file. 
             string uxmlPath = "Assets/_Project/Scripts/Tools/ItemEditor/Editor/ItemEditor.uxml";
             var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(uxmlPath);
 
@@ -35,6 +33,7 @@ namespace Project.Tools.ItemEditor.Editor
                 return;
             }
 
+            // Instantiate it inside the window. 
             visualTree.CloneTree(rootVisualElement);
             
             // Fetch/Query the elements.
