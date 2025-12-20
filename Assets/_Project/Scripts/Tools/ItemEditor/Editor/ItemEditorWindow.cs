@@ -60,21 +60,8 @@ namespace Project.Tools.ItemEditor.Editor
             visualTree.CloneTree(rootVisualElement);
             
             // Fetch/Query the elements.
-            m_ItemListView = rootVisualElement.Query<ListView>("ItemListView");
-            m_RightPane = rootVisualElement.Query<VisualElement>("RightPane");
-            
-            m_ID = rootVisualElement.Query<TextField>("ItemID_Field");
-            m_Name = rootVisualElement.Query<TextField>("ItemName_Field");
-            m_Icon = rootVisualElement.Query<ObjectField>("ItemIcon_Field");
-            m_MaxStack = rootVisualElement.Query<IntegerField>("ItemStack_Field");
-            
-            m_CreateItem = rootVisualElement.Query<ToolbarButton>("CreateItem_Button");
-            m_DeleteItem = rootVisualElement.Query<ToolbarButton>("DeleteItem_Button");
-            m_RefreshItems = rootVisualElement.Query<ToolbarButton>("RefreshItems_Button");
+            QueryAllElements();
 
-            m_FileName = rootVisualElement.Query<TextField>("FileName_Field");
-            m_FileName.isDelayed = true; // Important: Only trigger/change when enter is clicked.
-            
             m_ItemListView.selectionChanged += OnSelectionChanged;
             
             m_CreateItem.clicked += OnCreateItemButtonClicked;
@@ -86,54 +73,15 @@ namespace Project.Tools.ItemEditor.Editor
             SetupListView();
             
             // Register the fields in the right pane.
-            m_ID.RegisterValueChangedCallback(change =>
-            {
-                if (m_SelectedItem == null)
-                {
-                    return;
-                }
-                
-                m_SelectedItem.SetID(change.newValue); // Change the value.
-                EditorUtility.SetDirty(m_SelectedItem); // Save the value changed in the scriptable object.
-                m_ItemListView.RefreshItem(m_ItemListView.selectedIndex); // Refresh the list view.
-            });
+            RegisterIdField();
+            RegisterNameField();
+            RegisterIconField();
+            RegisterMaxStackField();
+            RegisterFileNameField();
+        }
 
-            m_Name.RegisterValueChangedCallback(change =>
-            {
-                if (m_SelectedItem == null)
-                {
-                    return;
-                }
-                
-                m_SelectedItem.SetName(change.newValue); // Change the value.
-                EditorUtility.SetDirty(m_SelectedItem); // Save the value changed in the scriptable object.
-                m_ItemListView.RefreshItem(m_ItemListView.selectedIndex); // Refresh the list view.
-            });
-
-            m_Icon.RegisterValueChangedCallback(change =>
-            {
-                if (m_SelectedItem == null)
-                {
-                    return;
-                }
-                
-                m_SelectedItem.SetIcon((Sprite)change.newValue); // Cast and change the value.
-                EditorUtility.SetDirty(m_SelectedItem); // Save the value changed in the scriptable object.
-                m_ItemListView.RefreshItem(m_ItemListView.selectedIndex); // Refresh the list view.
-            });
-
-            m_MaxStack.RegisterValueChangedCallback(change =>
-            {
-                if (m_SelectedItem == null)
-                {
-                    return;
-                }
-                
-                m_SelectedItem.SetMaxStack(change.newValue); // Change the value.
-                EditorUtility.SetDirty(m_SelectedItem); // Save the value changed in the scriptable object.
-                m_ItemListView.RefreshItem(m_ItemListView.selectedIndex); // Refresh the list view.
-            });
-
+        private void RegisterFileNameField()
+        {
             m_FileName.RegisterValueChangedCallback(change =>
             {
                 if (m_SelectedItem == null)
@@ -176,7 +124,81 @@ namespace Project.Tools.ItemEditor.Editor
                 }
             });
         }
+        private void RegisterMaxStackField()
+        {
+            m_MaxStack.RegisterValueChangedCallback(change =>
+            {
+                if (m_SelectedItem == null)
+                {
+                    return;
+                }
+                
+                m_SelectedItem.SetMaxStack(change.newValue); // Change the value.
+                EditorUtility.SetDirty(m_SelectedItem); // Save the value changed in the scriptable object.
+                m_ItemListView.RefreshItem(m_ItemListView.selectedIndex); // Refresh the list view.
+            });
+        }
+        private void RegisterIconField()
+        {
+            m_Icon.RegisterValueChangedCallback(change =>
+            {
+                if (m_SelectedItem == null)
+                {
+                    return;
+                }
+                
+                m_SelectedItem.SetIcon((Sprite)change.newValue); // Cast and change the value.
+                EditorUtility.SetDirty(m_SelectedItem); // Save the value changed in the scriptable object.
+                m_ItemListView.RefreshItem(m_ItemListView.selectedIndex); // Refresh the list view.
+            });
+        }
+        private void RegisterNameField()
+        {
+            m_Name.RegisterValueChangedCallback(change =>
+            {
+                if (m_SelectedItem == null)
+                {
+                    return;
+                }
+                
+                m_SelectedItem.SetName(change.newValue); // Change the value.
+                EditorUtility.SetDirty(m_SelectedItem); // Save the value changed in the scriptable object.
+                m_ItemListView.RefreshItem(m_ItemListView.selectedIndex); // Refresh the list view.
+            });
+        }
+        private void RegisterIdField()
+        {
+            m_ID.RegisterValueChangedCallback(change =>
+            {
+                if (m_SelectedItem == null)
+                {
+                    return;
+                }
+                
+                m_SelectedItem.SetID(change.newValue); // Change the value.
+                EditorUtility.SetDirty(m_SelectedItem); // Save the value changed in the scriptable object.
+                m_ItemListView.RefreshItem(m_ItemListView.selectedIndex); // Refresh the list view.
+            });
+        }
+        
+        private void QueryAllElements()
+        {
+            m_ItemListView = rootVisualElement.Query<ListView>("ItemListView");
+            m_RightPane = rootVisualElement.Query<VisualElement>("RightPane");
+            
+            m_ID = rootVisualElement.Query<TextField>("ItemID_Field");
+            m_Name = rootVisualElement.Query<TextField>("ItemName_Field");
+            m_Icon = rootVisualElement.Query<ObjectField>("ItemIcon_Field");
+            m_MaxStack = rootVisualElement.Query<IntegerField>("ItemStack_Field");
+            
+            m_CreateItem = rootVisualElement.Query<ToolbarButton>("CreateItem_Button");
+            m_DeleteItem = rootVisualElement.Query<ToolbarButton>("DeleteItem_Button");
+            m_RefreshItems = rootVisualElement.Query<ToolbarButton>("RefreshItems_Button");
 
+            m_FileName = rootVisualElement.Query<TextField>("FileName_Field");
+            m_FileName.isDelayed = true; // Important: Only trigger/change when enter is clicked.
+        }
+        
         private void OnCreateItemButtonClicked()
         {
             InventoryItemSO newItem = CreateInstance<InventoryItemSO>();
@@ -199,12 +221,24 @@ namespace Project.Tools.ItemEditor.Editor
             
             Debug.Log($"Asset created successfully, under this path: {path}");
         }
-
         private void OnDeleteItemButtonClicked()
         {
             if (m_SelectedItem == null)
             {
                 Debug.LogWarning("Please select an item to delete.");
+                return;
+            }
+            
+            
+            bool isConfirmed = EditorUtility.DisplayDialog(
+                title: "Delete Item", 
+                message: $"Are you sure you want to delete ({m_SelectedItem.Name}) item?", 
+                ok: "Yes, Delete", 
+                cancel: "Cancel");
+
+            if (!isConfirmed)
+            {
+                Debug.LogWarning("Delete canceled.");
                 return;
             }
             
@@ -222,13 +256,14 @@ namespace Project.Tools.ItemEditor.Editor
                 m_ItemListView.Rebuild();
                 
                 Debug.Log($"Asset deleted successfully");
+                EditorUtility.DisplayDialog("Delete Item", "Item has been deleted.", "OK");
             }
             else
             {
                 Debug.Log($"Asset not deleted successfully");
+                EditorUtility.DisplayDialog("Delete Item", "Item has been deleted.", "OK");
             }
         }
-
         private void OnRefreshItemsButtonClicked()
         {
             m_ItemListView.Rebuild();
@@ -252,7 +287,6 @@ namespace Project.Tools.ItemEditor.Editor
                 }
             }
         }
-
         private void SetupListView()
         {
             // Source (data) of the list view.
