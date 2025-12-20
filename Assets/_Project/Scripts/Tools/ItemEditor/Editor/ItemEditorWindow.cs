@@ -10,7 +10,7 @@ using ObjectField = UnityEditor.UIElements.ObjectField;
 // [Done] Todo: add the logic to show and populate all items.
 // [Done] Todo: add the logic to change the asset fields (input fields).
 // [Done] Todo: add the logic to create an item.
-// Todo: add the logic to rename the asset file name.
+// [Done] Todo: add the logic to rename the asset file name.
 // [Done] Todo: add the logic to delete an asset file.
 
 namespace Project.Tools.ItemEditor.Editor
@@ -29,6 +29,8 @@ namespace Project.Tools.ItemEditor.Editor
 
         private ToolbarButton m_CreateItem;
         private ToolbarButton m_DeleteItem;
+
+        private TextField m_FileName; 
             
         private InventoryItemSO m_SelectedItem;
         
@@ -66,16 +68,19 @@ namespace Project.Tools.ItemEditor.Editor
             
             m_CreateItem = rootVisualElement.Query<ToolbarButton>("CreateItem_Button");
             m_DeleteItem = rootVisualElement.Query<ToolbarButton>("DeleteItem_Button");
+
+            m_FileName = rootVisualElement.Query<TextField>("FileName_Field");
+            m_FileName.isDelayed = true; // Important: Only trigger/change when enter is clicked.
             
             m_ItemListView.selectionChanged += OnSelectionChanged;
+            
+            m_CreateItem.clicked += OnCreateItemButtonClicked;
+            m_DeleteItem.clicked += OnDeleteItemButtonClicked;
             
             // Load Data
             LoadInventoryItems();
             SetupListView();
             
-            m_CreateItem.clicked += OnCreateItemButtonClicked;
-            m_DeleteItem.clicked += OnDeleteItemButtonClicked;
-
             // Register the fields in the right pane.
             m_ID.RegisterValueChangedCallback(change =>
             {
@@ -123,6 +128,48 @@ namespace Project.Tools.ItemEditor.Editor
                 m_SelectedItem.SetMaxStack(change.newValue); // Change the value.
                 EditorUtility.SetDirty(m_SelectedItem); // Save the value changed in the scriptable object.
                 m_ItemListView.RefreshItem(m_ItemListView.selectedIndex); // Refresh the list view.
+            });
+
+            m_FileName.RegisterValueChangedCallback(change =>
+            {
+                if (m_SelectedItem == null)
+                {
+                    return;
+                }
+
+                // Keeping the SelectedItem in a backup field so we can retrieve
+                // its index after calling SetupListView since it selects the first
+                // item by default.
+                InventoryItemSO backupSelectedItem = m_SelectedItem;
+                
+                // Get the path and rename it.
+                string path = AssetDatabase.GetAssetPath(m_SelectedItem);
+                string error = AssetDatabase.RenameAsset(path, change.newValue);
+                
+                if (string.IsNullOrEmpty(error))
+                {
+                    // Rename success.
+                    
+                    AssetDatabase.SaveAssets();
+                    
+                    // Reload inventory data and visuals.
+                    LoadInventoryItems();
+                    SetupListView();
+                    m_ItemListView.Rebuild();
+
+                    // Reselect the renamed one.
+                    int index = m_InventoryItems.IndexOf(backupSelectedItem);
+                    m_ItemListView.SetSelection(index);
+                    m_ItemListView.ScrollToItem(index);
+                    
+                    Debug.Log("Asset renamed successfully!");
+                }
+                else
+                {
+                    // Rename failed.
+                    Debug.LogError("Rename failed: " + error);
+                    m_FileName.SetValueWithoutNotify(System.IO.Path.GetFileNameWithoutExtension(path));
+                }
             });
         }
 
@@ -234,11 +281,17 @@ namespace Project.Tools.ItemEditor.Editor
                 return;
             }
             
+            // SetValueWithoutNotify is to avoid calling the hooked events
+            // whenever a value is changed.
+            
             // Filling the fields.
-            m_ID.value = m_SelectedItem.ID;
-            m_Name.value = m_SelectedItem.Name;
-            m_Icon.value = m_SelectedItem.Icon;
-            m_MaxStack.value = m_SelectedItem.MaxStack;
+            m_ID.SetValueWithoutNotify(m_SelectedItem.ID);
+            m_Name.SetValueWithoutNotify(m_SelectedItem.Name);
+            m_Icon.SetValueWithoutNotify(m_SelectedItem.Icon);
+            m_MaxStack.SetValueWithoutNotify(m_SelectedItem.MaxStack);
+            
+            string path = AssetDatabase.GetAssetPath(m_SelectedItem);
+            m_FileName.SetValueWithoutNotify(System.IO.Path.GetFileNameWithoutExtension(path));
         }
     }
 }
